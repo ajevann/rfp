@@ -1,149 +1,149 @@
 <!doctype html>
 <html ng-app="reddit-portal">
-    <head>
-        <meta charset="utf-8">
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Untitled</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RFP</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
 
-        <style type="text/css">
-            body {
-                padding-top: 20px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container container-fluid" ng-controller="rpCtrl">
-            <table class="table table-responsive">
-                <tbody>
-                    <tr ng-repeat="post in posts | orderBy:'-score'">
-                        <td class="hidden-xs col-md-1"><a href="https://reddit.com/r/{{post.subreddit}}"><span class="label label-primary">{{post.subreddit}}</span></a></td>
-                        <td class="col-xs-12 col-md-8">
-                            <div class="visible-xs-* hidden-sm hidden-md hidden-lg">
-                                <a href="https://reddit.com/r/{{post.subreddit}}"><span class="label label-primary">{{post.subreddit}}</span></a>
-                                <span class="label label-primary">{{post.link_flair_text}}</span>
-                                <a href="https://{{post.permalink}}"><span class="label label-info">{{post.ups}} / {{post.num_comments}}</span></a>
-                            </div>
-                            {{post.title}}<a href="{{post.url}}"> ({{post.domain}})</a>
-                        </td>
-                        <td class="hidden-xs col-md-1"><span class="label label-primary">{{post.link_flair_text}}</span></td>
-                        <td class="hidden-xs col-md-1"><a href="https://{{post.permalink}}"><span class="label label-info">{{post.ups}} / {{post.num_comments}}</span></a></td>
-                    </tr>
-                </tbody>
-            </table>
+    <style type="text/css">
+      body {
+        padding-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container container-fluid" ng-controller="rpCtrl">
+      <table class="table table-responsive">
+        <tbody>
+          <tr ng-repeat="post in posts | orderBy:'-score'">
+            <td class="hidden-xs col-md-1"><a href="https://reddit.com/r/{{post.subreddit}}" class="label label-primary">{{post.subreddit}}</a></td>
+            <td class="col-xs-12 col-md-8">
+              <div class="visible-xs-* hidden-sm hidden-md hidden-lg">
+                <a href="https://reddit.com/r/{{post.subreddit}}" class="label label-primary">{{post.subreddit}}</a>
+                <span class="label label-primary">{{post.link_flair_text}}</span>
+                <a href="https://{{post.permalink}}" class="label label-info">{{post.ups}} / {{post.num_comments}}</a>
+              </div>
+              {{post.title}} <a href="{{post.url}}">({{post.domain}})</a>
+            </td>
+            <td class="hidden-xs col-md-1"><span class="label label-primary">{{post.link_flair_text}}</span></td>
+            <td class="hidden-xs col-md-1"><a href="https://{{post.permalink}}" class="label label-info">{{post.ups}} / {{post.num_comments}}</a></td>
+          </tr>
+        </tbody>
+      </table>
 
-        </div>
+    </div>
 
-        <script>
-            var app = angular.module("reddit-portal",[]);
+    <script>
+      var app = angular.module("reddit-portal",[]);
 
-            app.controller("rpCtrl", function rpCtrl($scope, rpFactory){
-                $scope.posts = [];
-                $scope.subreddits = [];
-                $scope.status = "OK";
+      app.controller("rpCtrl", function rpCtrl($scope, rpFactory){
+        $scope.posts = [];
+        $scope.subreddits = [];
+        $scope.status = "OK";
 
-                function getPosts() {
-                    rpFactory.getPosts().then(function(posts){
-                        angular.forEach(posts, function(value, key) {
-                            if (value.data.domain != "i.imgur.com") {
-                                var post = value.data;
-                                //console.log(post.ups + "\t" + post.num_comments + "\t" + (post.ups/post.num_comments) + "\t" + ((new Date()).getTime() - post.created));
-                                var numer = (post.num_comments == "NaN" ? 1 : post.num_comments) - post.score;
-                                var denom = (new Date()).getTime()/1000 - post.created;
-                                post.score = numer/denom;
-                                console.log(numer + "\t" + post.score + "\t" + post.title.substring(0, 20));
-                                $scope.posts.push(post);
-                            }
-                        });
-                    });
-                }
-
-                function getSubreddits() {
-                    $scope.subreddits = rpFactory.getSubreddits();
-                }
-
-                function init() {
-                    getPosts();
-                    getSubreddits();
-                    console.log("READY");
-                }
-
-                init();
+        function getPosts() {
+          rpFactory.getPosts().then(function(posts){
+            angular.forEach(posts, function(value, key) {
+              if (value.data.domain.indexOf("imgur.com") == -1) {
+                var post = value.data;
+                //console.log(post.ups + "\t" + post.num_comments + "\t" + (post.ups/post.num_comments) + "\t" + ((new Date()).getTime() - post.created));
+                var numer = (post.num_comments == "NaN" ? 1 : post.num_comments) - post.score;
+                var denom = (new Date()).getTime()/1000 - post.created;
+                post.score = numer/denom;
+                //console.log(numer + "\t" + post.score + "\t" + post.title.substring(0, 20));
+                $scope.posts.push(post);
+              }
             });
+          });
+        }
 
-            app.factory("rpFactory", ['$http','$q', function ($http, $q) {
-                var rpFactory = {};
-                var baseURL = "http://www.reddit.com/r/";
-                var posts = [];
-                var subreddits = [
-                    "worldnews",
-                    "worldpolitics",
-                    "space",
-                    "science",
-                    "news",
-                    "geopolitics",
-                    "SpacePolicy",
-                    "nasa",
-                    "politics",
-                    "inthenews",
-                    "LegalNews",
-                    "Economics",
-                    "Worldevents",
-                    "NeutralPolitics"
-                ];
+        function getSubreddits() {
+          $scope.subreddits = rpFactory.getSubreddits();
+        }
 
-                rpFactory.getPosts = function() {
-                    return $q.all(subreddits.map(function (item) {
-                        return $http({
-                            method: 'GET',
-                            url: baseURL + item + ".json"
-                        });
-                    }))
-                    .then(function (results) {
-                        results.forEach(function (val, i) {
-                            posts = posts.concat(val.data.data.children);
-                        });
-                        return posts;
-                    });
-                };
+        function init() {
+          getPosts();
+          getSubreddits();
+          console.log("READY");
+        }
 
-                rpFactory.getSubreddits = function() {
-                    return subreddits;
-                };
+        init();
+      });
 
-                rpFactory.addSubreddit = function(subreddit) {
-                    try {
-                        subreddits.push(subreddit);
-                        return true;
-                    } catch (e) {
-                        console.log(e);
-                        return false;
-                    }
+      app.factory("rpFactory", ['$http','$q', function ($http, $q) {
+        var rpFactory = {};
+        var baseURL = "http://www.reddit.com/r/";
+        var posts = [];
+        var subreddits = [
+          "worldnews",
+          "worldpolitics",
+          "space",
+          "science",
+          "news",
+          "geopolitics",
+          "SpacePolicy",
+          "nasa",
+          "politics",
+          "inthenews",
+          "LegalNews",
+          "Economics",
+          "Worldevents",
+          "NeutralPolitics",
+          "TrueNews"
+        ];
 
-                };
+        rpFactory.getPosts = function() {
+          return $q.all(subreddits.map(function (item) {
+            return $http({
+              method: 'GET',
+              url: baseURL + item + ".json"
+            });
+          }))
+          .then(function (results) {
+            results.forEach(function (val, i) {
+              posts = posts.concat(val.data.data.children);
+            });
+            return posts;
+          });
+        };
 
-                rpFactory.removeSubreddit = function(subreddit) {
-                    try {
-                        angular.forEach(subreddits, function(value, key) {
-                            var indexToRemove = -1;
-                            if (value == subreddit) {
-                                indexToRemove = key;
-                            }
-                        });
-                        if (indexToRemove > -1) { 
-                            subreddits.splice(indexToRemove, 1); 
-                            return true;
-                        }
-                    } catch (e) {
-                        console.log(e);
-                        return false;
-                    }
-                };
+        rpFactory.getSubreddits = function() {
+          return subreddits;
+        };
 
-                return rpFactory;
-            }]);
-        </script>
-    </body>
+        rpFactory.addSubreddit = function(subreddit) {
+          try {
+            subreddits.push(subreddit);
+            return true;
+          } catch (e) {
+            console.log(e);
+            return false;
+          }
+        };
+
+        rpFactory.removeSubreddit = function(subreddit) {
+          try {
+            angular.forEach(subreddits, function(value, key) {
+              var indexToRemove = -1;
+              if (value == subreddit) {
+                indexToRemove = key;
+              }
+            });
+            if (indexToRemove > -1) { 
+              subreddits.splice(indexToRemove, 1); 
+              return true;
+            }
+          } catch (e) {
+            console.log(e);
+            return false;
+          }
+        };
+
+        return rpFactory;
+      }]);
+    </script>
+  </body>
 </html>
