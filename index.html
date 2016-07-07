@@ -15,10 +15,16 @@
     </style>
   </head>
   <body>
-    <div class="container container-fluid" ng-controller="rpCtrl">
+    <div class="container" ng-controller="rpCtrl">
+      <ul class="nav nav-pills nav-justified">
+        <li><a ng-click="category = ''">ALL</a></li>
+        <li><a ng-click="category = 'news'">NEWS</a></li>
+        <li><a ng-click="category = 'science'">SCIENCE</a></li>
+        <li><a ng-click="category = 'dev'">DEV</a></li>
+      </ul>
       <table class="table table-responsive">
         <tbody>
-          <tr ng-repeat="post in posts | orderBy:'-score'">
+          <tr ng-repeat="post in posts | orderBy:'-score' | filter:category">
             <td class="hidden-xs col-md-1"><a href="https://reddit.com/r/{{post.subreddit}}" class="label label-primary">{{post.subreddit}}</a></td>
             <td class="col-xs-12 col-md-8">
               <div class="visible-xs-* hidden-sm hidden-md hidden-lg">
@@ -29,7 +35,7 @@
               {{post.title}} <a href="{{post.url}}">({{post.domain}})</a>
             </td>
             <td class="hidden-xs col-md-1"><span class="label label-primary">{{post.link_flair_text}}</span></td>
-            <td class="hidden-xs col-md-1"><a href="https://{{post.permalink}}" class="label label-info">{{post.ups}} / {{post.num_comments}}</a></td>
+            <td class="hidden-xs col-md-1"><a href="https://reddit.com{{post.permalink}}" class="label label-info">{{post.num_comments}}</a></td>
           </tr>
         </tbody>
       </table>
@@ -43,6 +49,11 @@
         $scope.posts = [];
         $scope.subreddits = [];
         $scope.status = "OK";
+        $scope.category = "";
+
+        function show() {
+
+        }
 
         function getPosts() {
           rpFactory.getPosts().then(function(posts){
@@ -78,28 +89,40 @@
         var baseURL = "http://www.reddit.com/r/";
         var posts = [];
         var subreddits = [
-          "worldnews",
-          "worldpolitics",
-          "space",
-          "science",
-          "news",
-          "geopolitics",
-          "SpacePolicy",
-          "nasa",
-          "politics",
-          "inthenews",
-          "LegalNews",
-          "Economics",
-          "Worldevents",
-          "NeutralPolitics",
-          "TrueNews"
+          {"name":"worldnews","type":"news"},
+          {"name":"worldpolitics","type":"news"},
+          {"name":"space","type":"science"},
+          {"name":"spacex","type":"science"},
+          {"name":"science","type":"news"},
+          {"name":"news","type":"news"},
+          {"name":"geopolitics","type":"news"},
+          {"name":"SpacePolicy","type":"science"},
+          {"name":"nasa","type":"science"},
+          {"name":"politics","type":"news"},
+          {"name":"inthenews","type":"news"},
+          {"name":"LegalNews","type":"news"},
+          {"name":"Economics","type":"science"},
+          {"name":"Worldevents","type":"news"},
+          {"name":"NeutralPolitics","type":"news"},
+          {"name":"TrueNews","type":"news"},
+          {"name":"javascript","type":"dev"},
+          {"name":"webdev","type":"dev"},
+          {"name":"Web_Development","type":"dev"},
+          {"name":"database","type":"dev"},
+          {"name":"javascript","type":"dev"},
+          {"name":"CSS","type":"dev"},
+          {"name":"HTML5","type":"dev"},
+          {"name":"websecurity","type":"dev"},
+          {"name":"webapps","type":"dev"},
+          {"name":"hosting","type":"dev"},
+          {"name":"web_infrastructure","type":""}
         ];
 
         rpFactory.getPosts = function() {
           return $q.all(subreddits.map(function (item) {
             return $http({
               method: 'GET',
-              url: baseURL + item + ".json"
+              url: baseURL + item.name + ".json"
             });
           }))
           .then(function (results) {
@@ -132,8 +155,8 @@
                 indexToRemove = key;
               }
             });
-            if (indexToRemove > -1) { 
-              subreddits.splice(indexToRemove, 1); 
+            if (indexToRemove > -1) {
+              subreddits.splice(indexToRemove, 1);
               return true;
             }
           } catch (e) {
