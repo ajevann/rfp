@@ -1,0 +1,13 @@
+<ul class="nav nav-pills nav-justified">
+  <li><a ng-click="setCategory('')">ALL</a></li>
+  <li><a ng-click="setCategory('news')">NEWS</a></li>
+  <li><a ng-click="setCategory('science')">SCIENCE</a></li>
+  <li><a ng-click="setCategory('dev')">DEVELOPMENT</a></li>
+  <li>
+    <button type="button" class="btn btn-default" ng-click="refreshPosts()">
+      <span ng-show="posts.length == 0" class="glyphicon glyphicon-repeat normal-right-spinner"></span>
+      <span ng-show="posts.length == 0">Loading</span>
+      <span ng-show="posts.length > 0">Refresh</span>
+    </button>
+  </li>
+</ul>

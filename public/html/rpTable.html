@@ -1,0 +1,28 @@
+<table class="table table-responsive">
+  <tbody>
+    <tr ng-repeat="post in posts | orderBy:'-score' | filter:category">
+      <td class="hidden-xs col-md-1"><a href="https://reddit.com/r/{{post.subreddit}}" class="label label-primary">{{post.subreddit}}</a></td>
+      <td class="col-xs-12 col-md-8">
+        
+        <div class="visible-xs-* hidden-sm hidden-md hidden-lg">
+          <a href="https://reddit.com/r/{{post.subreddit}}" class="label label-primary">{{post.subreddit}}</a>
+          <span class="label label-primary">{{post.link_flair_text}}</span>
+          <a href="https://{{post.permalink}}" class="label label-info">{{post.ups}} / {{post.num_comments}}</a>
+        </div>
+
+        <div>
+          {{post.title}} <a href="{{post.url}}">({{post.domain}})</a> 
+          <span ng-if="post.selftext"> <a class="label label-primary" ng-click="post.showSelfText = !post.showSelfText">Show description</a> </span>
+        </div>
+        
+        <div ng-show="post.showSelfText">
+          <br/>
+          <i>{{post.selftext}}</i>
+        </div>
+        
+      </td>
+      <td class="hidden-xs col-md-1"><span class="label label-primary">{{post.link_flair_text}}</span></td>
+      <td class="hidden-xs col-md-1"><a href="https://reddit.com{{post.permalink}}" class="label label-info">{{post.num_comments}}</a></td>
+    </tr>
+  </tbody>
+</table>

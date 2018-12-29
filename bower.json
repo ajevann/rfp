@@ -1,0 +1,24 @@
+{
+  "name": "rfp",
+  "description": "",
+  "main": "server .js",
+  "authors": [
+    "Alex Vann <ajevann@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/ajevann/rfp",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "3.3.4",
+    "angular": "1.4.5"
+  },
+  "install": {
+    "path": "public/libs"
+  }
+}
