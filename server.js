@@ -18,3 +18,5 @@ app.get('/', function(req, res) {
 });
 
 app.listen(8080);
+
+console.log('Application running on localhost:8080');
